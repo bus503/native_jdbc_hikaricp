@@ -1,4 +1,4 @@
-package native_jdbc_hikaricp.dao;
+package native_jdbc_hikaricp.daoimpl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,9 +7,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import native_jdbc_hikaricp.dao.DepartmentDao;
 import native_jdbc_hikaricp.dto.Department;
 
 public class DepartmentDaoImpl implements DepartmentDao {
+	private static Logger logger = LogManager.getLogger();
 	// singleton pattern
 
 	private static final DepartmentDaoImpl instance = new DepartmentDaoImpl();
@@ -25,7 +30,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 		String sql = "select deptno, deptname, floor from department";
 		List<Department> list = new ArrayList<Department>();
 		try (PreparedStatement pstmt = con.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
-
+			logger.trace(pstmt);
 			while (rs.next()) {
 				list.add(getDepartment(rs));
 			}
@@ -48,7 +53,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 			pstmt.setInt(1, department.getDeptNo());
 			pstmt.setString(2, department.getDeptName());
 			pstmt.setInt(3, department.getFloor());
-			System.out.println(pstmt);
+			logger.trace(pstmt);
 			res = pstmt.executeUpdate();
 		}
 		return res;
@@ -62,7 +67,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 			pstmt.setString(1, department.getDeptName());
 			pstmt.setInt(2, department.getFloor());
 			pstmt.setInt(3, department.getDeptNo());
-			System.out.println(pstmt);
+			logger.trace(pstmt);
 			res = pstmt.executeUpdate();
 		}
 		return res;
@@ -74,10 +79,24 @@ public class DepartmentDaoImpl implements DepartmentDao {
 		int res = -1;
 		try(PreparedStatement pstmt = con.prepareStatement(sql)){
 			pstmt.setInt(1, department.getDeptNo());
-			System.out.println(pstmt);
+			logger.trace(pstmt);
 			res = pstmt.executeUpdate();
 		}
 		return res;
 	}
 
+	@Override
+	public Department selectDepartmentByNo(Connection con, int dno) throws SQLException {
+		String sql = "select deptno, deptname, floor from department where deptno = ?";
+		try(PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setInt(1,dno);
+			logger.trace(pstmt);
+			try(ResultSet rs= pstmt.executeQuery()){
+				if(rs.next()) {
+					return getDepartment(rs);
+				}
+			}
+		}
+		return null;
+	}
 }

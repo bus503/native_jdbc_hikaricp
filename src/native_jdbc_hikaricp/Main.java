@@ -7,9 +7,9 @@ import java.util.List;
 import javax.swing.JDialog;
 
 import native_jdbc_hikaricp.dao.DepartmentDao;
-import native_jdbc_hikaricp.dao.DepartmentDaoImpl;
 import native_jdbc_hikaricp.dao.EmployeeDao;
-import native_jdbc_hikaricp.dao.EmployeeDaoImpl;
+import native_jdbc_hikaricp.daoimpl.DepartmentDaoImpl;
+import native_jdbc_hikaricp.daoimpl.EmployeeDaoImpl;
 import native_jdbc_hikaricp.ds.C3P0DataSource;
 import native_jdbc_hikaricp.ds.DBCPDataSource;
 import native_jdbc_hikaricp.ds.Hikari_DataSource;

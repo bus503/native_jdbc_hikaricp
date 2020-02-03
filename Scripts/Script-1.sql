@@ -6,3 +6,7 @@ from employee;
 
 select *
 from department;
+
+select *
+from department
+where deptno = 3;

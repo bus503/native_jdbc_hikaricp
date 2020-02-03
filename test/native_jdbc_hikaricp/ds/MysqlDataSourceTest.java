@@ -10,13 +10,7 @@ import org.junit.Test;
 
 public class MysqlDataSourceTest {
 	private static Logger logger = LogManager.getLogger();
-		
-//	@Before
-//	public void setUp() throws Exception {}
-//	
-//	@After
-//	public void tearDown() throws Exception{}
-	
+
 	@Test
 	public void testGetConnection() {
 		try(Connection con = MysqlDataSource.getConnection()){

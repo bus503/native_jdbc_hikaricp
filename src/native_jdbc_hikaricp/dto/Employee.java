@@ -7,7 +7,32 @@ public class Employee {
 	private Employee manager;
 	private int salary;
 	private Department dept;
+	private byte[] pic;
 	
+	
+	public byte[] getPic() {
+		return pic;
+	}
+
+	public void setPic(byte[] pic) {
+		this.pic = pic;
+	}
+
+	public void setManager(Employee manager) {
+		this.manager = manager;
+	}
+
+	public Employee(int empNo, String empName, String title, Employee manager, int salary, Department dept,
+			byte[] pic) {
+		this.empNo = empNo;
+		this.empName = empName;
+		this.title = title;
+		this.manager = manager;
+		this.salary = salary;
+		this.dept = dept;
+		this.pic = pic;
+	}
+
 	public Employee() {}
 
 	public Employee(int empNo) {
@@ -73,9 +98,7 @@ public class Employee {
 
 	@Override
 	public String toString() {
-		return String.format("Employee [%s, %s, %s, %s, %s, %s]", empNo,
-				empName, title, manager.getEmpNo()==0?"null":"", salary, dept.getDeptNo());
+		return String.format("Employee [%s, %s, %s, %s, %s, %s, %s]", empNo,
+				empName, title, manager.getEmpNo()==0?"null":"", salary, dept.getDeptNo(),pic==null? "null":pic.length);
 	}
-	
-
 }
