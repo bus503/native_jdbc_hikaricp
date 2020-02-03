@@ -1,4 +1,4 @@
-package native_jdbc.ui.service;
+package native_jdbc_hikaricp.ui.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -6,11 +6,11 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import native_jdbc.dao.DepartmentDao;
-import native_jdbc.dao.DepartmentDaoImpl;
-import native_jdbc.dao.EmployeeDao;
-import native_jdbc.dao.EmployeeDaoImpl;
-import native_jdbc_hikaricp.ds.Hikari_DataSource2;
+import native_jdbc_hikaricp.dao.DepartmentDao;
+import native_jdbc_hikaricp.dao.DepartmentDaoImpl;
+import native_jdbc_hikaricp.dao.EmployeeDao;
+import native_jdbc_hikaricp.dao.EmployeeDaoImpl;
+import native_jdbc_hikaricp.ds.MysqlDataSource;
 import native_jdbc_hikaricp.dto.Department;
 import native_jdbc_hikaricp.dto.Employee;
 
@@ -21,7 +21,7 @@ public class DepartmentUIService {
 
 	public DepartmentUIService() {
 		try {
-			con = Hikari_DataSource2.getConnection();
+			con = MysqlDataSource.getConnection();
 			deptDao = DepartmentDaoImpl.getInstance();
 			empDao = EmployeeDaoImpl.getInstance();
 		} catch (SQLException e) {

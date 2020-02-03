@@ -6,23 +6,23 @@ import java.util.List;
 
 import javax.swing.JDialog;
 
-import native_jdbc.dao.DepartmentDao;
-import native_jdbc.dao.DepartmentDaoImpl;
-import native_jdbc.dao.EmployeeDao;
-import native_jdbc.dao.EmployeeDaoImpl;
-import native_jdbc.ui.DlgEmployee;
+import native_jdbc_hikaricp.dao.DepartmentDao;
+import native_jdbc_hikaricp.dao.DepartmentDaoImpl;
+import native_jdbc_hikaricp.dao.EmployeeDao;
+import native_jdbc_hikaricp.dao.EmployeeDaoImpl;
 import native_jdbc_hikaricp.ds.C3P0DataSource;
 import native_jdbc_hikaricp.ds.DBCPDataSource;
 import native_jdbc_hikaricp.ds.Hikari_DataSource;
-import native_jdbc_hikaricp.ds.Hikari_DataSource2;
+import native_jdbc_hikaricp.ds.MysqlDataSource;
 import native_jdbc_hikaricp.dto.Department;
 import native_jdbc_hikaricp.dto.Employee;
+import native_jdbc_hikaricp.ui.DlgEmployee;
 
 public class Main {
 
 	public static void main(String[] args) throws SQLException {
 		
-		try (Connection con = Hikari_DataSource2.getConnection()){
+		try (Connection con = MysqlDataSource.getConnection()){
 //			소속부서사원검색테스트(con);
 			
 			DepartmentDao dao = DepartmentDaoImpl.getInstance();
@@ -78,7 +78,7 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		try (Connection con = Hikari_DataSource2.getConnection()){
+		try (Connection con = MysqlDataSource.getConnection()){
 			System.out.println(con);
 		} catch (SQLException e) {
 			e.printStackTrace();

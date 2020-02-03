@@ -1,4 +1,4 @@
-package native_jdbc.dao;
+package native_jdbc_hikaricp.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
