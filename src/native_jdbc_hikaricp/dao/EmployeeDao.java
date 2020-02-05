@@ -8,11 +8,18 @@ import native_jdbc_hikaricp.dto.Department;
 import native_jdbc_hikaricp.dto.Employee;
 
 public interface EmployeeDao {
-	Employee selectEmployeeByDno(Connection con, Department dept) throws SQLException;
+//	Employee selectEmployeeByEmpno(Connection con, Employee empNo);
+	Employee selectEmployeeByEmpNo(Connection con, Employee emp);
 	
 	List<Employee> selectEmployeeByAll(Connection con) throws SQLException;
 	
 	List<Employee> selectEmployeeGroupByDno(Connection con, Department dept) throws SQLException;
 	
+	int deleteEmployee(Connection con, Employee employee);
+	
+	int insertEmployee(Connection con, Employee employee) throws SQLException;
+	
+	int updateEmployee(Connection con, Employee employee) throws SQLException;
+
 	
 }
