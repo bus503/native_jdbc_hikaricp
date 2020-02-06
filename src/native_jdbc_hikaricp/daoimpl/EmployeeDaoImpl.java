@@ -1,14 +1,12 @@
 package native_jdbc_hikaricp.daoimpl;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import native_jdbc_hikaricp.LogUtil;
 import native_jdbc_hikaricp.dao.EmployeeDao;
@@ -18,7 +16,6 @@ import native_jdbc_hikaricp.dto.Employee;
 public class EmployeeDaoImpl implements EmployeeDao {
 	private static final EmployeeDaoImpl instance = new EmployeeDaoImpl();
 
-
 	private EmployeeDaoImpl() {
 	}
 
@@ -26,12 +23,22 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		return instance;
 	}
 
-//	@Override
-//	public Employee selectEmployeeByEmpno(Connection con, Employee empNo) {
-//		
-//		
-//		return null;
-//	}
+	@Override
+	public Employee selectEmployeeByEmpNo(Connection con, Employee emp) {
+		String sql = "select empno, empname, title, manager, salary, dno, pic from employee where empno=?";
+		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+			pstmt.setInt(1, emp.getEmpNo());
+			LogUtil.prnLog(pstmt);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return getEmployee(rs, true);
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return null;
+	}
 
 	@Override
 	public List<Employee> selectEmployeeGroupByDno(Connection con, Department dept) throws SQLException {
@@ -41,7 +48,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		List<Employee> list = new ArrayList<>();
 		try (PreparedStatement pstmt = con.prepareStatement(sql);) {
 			pstmt.setInt(1, dept.getDeptNo());
-			System.out.println(pstmt);
+			LogUtil.prnLog(pstmt);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
 					list.add(getEmployeeFull(rs));
@@ -66,7 +73,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 	@Override
 	public List<Employee> selectEmployeeByAll(Connection con) throws SQLException {
-		String sql = "select empno, empname, title, manager, salary, dno, pic from employee";
+		String sql = "select empno, empname, title, manager, salary, dno from employee";
 		List<Employee> list = new ArrayList<>();
 		try (PreparedStatement pstmt = con.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
 			LogUtil.prnLog(pstmt);
@@ -93,21 +100,16 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	}
 
 	@Override
-	public int deleteEmployee(Connection con, Employee employee) {
+	public int insertEmployee(Connection con, Employee employee) {
+		String sql = null;
 
-		return 0;
-	}
-
-	@Override
-	public int insertEmployee(Connection con, Employee employee) throws SQLException {
-		String sql;
 		if (employee.getPic() == null) {
-//			logger.debug("pic is null");
-			sql = "insert into employee(empno, empname, title, manager, salary, dno) values(?,?,?,?,?,?)";
+			sql = "insert into employee(empno, empname, title, manager, salary, dno) " + "values (?, ?, ?, ?, ?, ?)";
 		} else {
-//			logger.debug("pic is not null");
 			sql = "insert into employee values(?, ?, ?, ?, ?, ?, ?)";
 		}
+		int res = 0;
+		LogUtil.prnLog(sql);
 		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
 			pstmt.setInt(1, employee.getEmpNo());
 			pstmt.setString(2, employee.getEmpName());
@@ -115,46 +117,66 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			pstmt.setInt(4, employee.getManager().getEmpNo());
 			pstmt.setInt(5, employee.getSalary());
 			pstmt.setInt(6, employee.getDept().getDeptNo());
-
+			LogUtil.prnLog(pstmt);
 			if (employee.getPic() != null) {
 				pstmt.setBytes(7, employee.getPic());
 			}
-			return pstmt.executeUpdate();
+			res = pstmt.executeUpdate();
+
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
+		return res;
+
 	}
 
 	@Override
-	public int updateEmployee(Connection con, Employee employee) throws SQLException {
-		String sql = "update employee set empname=?, title=?, manager=?, salary=?, dno=?, pic=?"+ "where empno=?";
-		try(PreparedStatement pstmt = con.prepareStatement(sql)){
+	public int updateEmployee(Connection con, Employee employee) {
+		String sql = "update employee set empname=?, title=?, manager=?, salary=?, dno=?, pic=? " + "where empno=?";
+		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
 			pstmt.setString(1, employee.getEmpName());
 			pstmt.setString(2, employee.getTitle());
 			pstmt.setInt(3, employee.getManager().getEmpNo());
 			pstmt.setInt(4, employee.getSalary());
 			pstmt.setInt(5, employee.getDept().getDeptNo());
-			pstmt.setInt(7,employee.getEmpNo());
+			pstmt.setInt(7, employee.getEmpNo());
 			LogUtil.prnLog(pstmt);
 			pstmt.setBytes(6, employee.getPic());
-		
 			return pstmt.executeUpdate();
+
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public Employee selectEmployeeByEmpNo(Connection con, Employee emp) {
-		String sql = "select empno, empname, title, manager, salary, dno, pic from employee where empno =?";
+	public int deleteEmployee(Connection con, Employee employee) {
+		String sql = "delete from employee where empno = ?";
 		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-			pstmt.setInt(1, emp.getEmpNo());
+			pstmt.setInt(1, employee.getEmpNo());
 			LogUtil.prnLog(pstmt);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					return getEmployee(rs, true);
-				}
-			}
+			return pstmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new RuntimeException(); // 자동으로 전파가 됨
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
 
+	@Override
+	public List<Employee> procedureEmployeeByDno(Connection con, int dno) throws SQLException {
+		String sql = "{call procedure_01(?)}";
+		List<Employee> list = new ArrayList<>();
+		try (CallableStatement cs = con.prepareCall(sql)) {
+			cs.setInt(1, dno);
+			LogUtil.prnLog(cs);
+			try (ResultSet rs = cs.executeQuery()) {
+				if (rs.next()) {
+					list = new ArrayList<>();
+				}
+				do {
+					list.add(getEmployee(rs, false));
+				} while (rs.next());
+			}
+		}
+		return list;
+	}
 }

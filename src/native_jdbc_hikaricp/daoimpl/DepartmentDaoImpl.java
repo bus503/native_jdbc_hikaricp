@@ -46,7 +46,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 	}
 
 	@Override
-	public int insertDepartment(Connection con, Department department) throws SQLException {
+	public int insertDepartment(Connection con, Department department) {
 		String sql = "insert into department values(?, ?, ?)";
 		int res = -1;
 		try(PreparedStatement pstmt = con.prepareStatement(sql)){
@@ -55,6 +55,8 @@ public class DepartmentDaoImpl implements DepartmentDao {
 			pstmt.setInt(3, department.getFloor());
 			LogUtil.prnLog(pstmt);
 			res = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException();
 		}
 		return res;
 	}
